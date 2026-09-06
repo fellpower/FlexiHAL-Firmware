@@ -1,18 +1,34 @@
+"""Create and validate the Modulus UF2 as a required post-build step."""
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
 Import("env")
 
-# Custom HEX from ELF
-env.AddPostAction(
-    "$BUILD_DIR/${PROGNAME}.elf",
-    env.VerboseAction(" ".join([
-        "$OBJCOPY", "-O", "ihex", "-R", ".eeprom", 
-        '"$BUILD_DIR/${PROGNAME}.elf"', '"$BUILD_DIR/${PROGNAME}.hex"'
-    ]), "Building $BUILD_DIR/${PROGNAME}.hex")
-)
+if not Path(env.subst("$BUILD_DIR")).resolve().is_relative_to(Path(env.subst("$PROJECT_DIR")).resolve()):
+    raise ValueError("Build directory must be inside this project; use python scripts/build.py")
 
-def after_build(source, target, env): 
-    print("[From Script] Finished building!!")
-    env.Replace(PROGNAME="FLEXI_HAL_%s" % env.GetProjectOption("custom_prog_version")+"_"+env.GetProjectOption("grblhal_driver_version"))
-    env.Execute("python uf2conv.py -c -b 0x08010000 -f 0x57755a57 $BUILD_DIR/firmware.hex --output ${PROGNAME}.uf2")
+version = os.environ.get("RELEASE_VERSION", "v0.1.0-rc.1")
+if not re.fullmatch(r"v\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?", version):
+    raise ValueError("Invalid RELEASE_VERSION")
+
+
+def after_build(source, target, env):
+    root = Path(env.subst("$PROJECT_DIR"))
+    build = Path(env.subst("$BUILD_DIR"))
+    variant = env.subst("$PIOENV").removeprefix("f446re_flexi_cnc_")
+    binary = build / "firmware.bin"
+    uf2 = build / f"FlexiHAL-Modulus-{variant}-{version}.uf2"
+    subprocess.run([
+        sys.executable, str(root / "uf2conv.py"), "-c", "-b", "0x08010000",
+        "-f", "0x57755a57", str(binary), "--output", str(uf2),
+    ], cwd=root, check=True)
+    subprocess.run([
+        sys.executable, str(root / "scripts" / "release.py"), "verify",
+        "--environment", env.subst("$PIOENV"), "--version", version,
+    ], cwd=root, check=True)
+
 
 env.AddPostAction("buildprog", after_build)
-

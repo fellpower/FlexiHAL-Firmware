@@ -37,3 +37,8 @@ build
 .vscode/c_cpp_properties.json
 *.code-workspace
 platformio.local.ini
+.tools/
+work/
+outputs/
+__pycache__/
+compile_commands.json
