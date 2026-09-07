@@ -51,6 +51,26 @@ configuration. The files are not interchangeable across different axis setups.
 
 ## Local build
 
+On Windows, start `./build.ps1` in PowerShell for the numbered selection menu,
+similar to the Modulus launcher. Choose **build + UF2** or **clean**, then one of
+the 17 profiles or **all profiles**. When building, accept the latest local
+version tag or enter a release version. The verified UF2 path is shown when done;
+the menu stays open for another selection. `0` returns or exits.
+
+Direct commands are also supported:
+
+```powershell
+.\build.ps1 -List
+.\build.ps1 -Environment printnc -Version v0.1.0-rc.1
+.\build.ps1 -Environment printnc,printnc_eth_sd
+.\build.ps1 -All
+.\build.ps1 -Environment printnc -Clean
+```
+
+The launcher works from any current directory. Clean only removes generated
+build files for the selected profile; packaged UF2s in `outputs` are retained.
+It does not flash hardware or publish a GitHub release.
+
 Requires Python 3.11 or newer and **PlatformIO Core 6.1.19** on PATH.
 The STM32 platform, framework and ARM compiler versions are pinned in
 `platformio.ini`. Submodules stay pinned to the commits recorded in Git.
