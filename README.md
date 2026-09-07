@@ -7,6 +7,34 @@ branch `F446_Flexi_HAL`, baseline `bd233169ef05596c463c73416007f2f2caa97128`.
 
 [Download releases](https://github.com/fellpower/FlexiHAL-Firmware/releases)
 
+## Ready-to-flash PrintNC firmware for Modulus
+
+**For a PrintNC with an STM32F446 FlexiHAL, three axes (X/Y/Z), dual Y motors
+and Y auto-squaring, use this UF2 to connect Modulus through the ESP32-S3 UART bridge.**
+
+**[Download PrintNC UF2 v0.1.0-rc.1](https://github.com/fellpower/FlexiHAL-Firmware/raw/refs/heads/F446_Flexi_HAL/firmware/FlexiHAL-Modulus-printnc-v0.1.0-rc.1.uf2)**
+
+The file is also included in this repository under
+[`firmware/FlexiHAL-Modulus-printnc-v0.1.0-rc.1.uf2`](firmware/FlexiHAL-Modulus-printnc-v0.1.0-rc.1.uf2).
+No compilation is needed for this configuration.
+
+- Modulus UART MPG enabled (`MPG_ENABLE=2`), keypad disabled (`KEYPAD_ENABLE=0`),
+  statuslight plugin removed.
+- Includes Y auto-squaring, VFD/Modbus support, probe protection, FlexiHAL ATC,
+  acceleration profiles, E-stop and safety-door support.
+- Ethernet/Telnet, SD card, WebUI and Bluetooth are disabled in this variant.
+- Machine-specific settings, including steps/mm, travel limits and VFD settings,
+  must match your machine. For other axis configurations, choose the corresponding
+  variant from the table below.
+
+This is the unchanged asset from [release v0.1.0-rc.1](https://github.com/fellpower/FlexiHAL-Firmware/releases/tag/v0.1.0-rc.1),
+built from source commit `2d0df043d48c09e2334d692427fdd77442b21c06`.
+It passed the software build and UF2 checks; **hardware testing of this prerelease
+is still pending**. Flash through the existing FlexiHAL UF2 bootloader.
+
+SHA-256: `a8a83795c338034f996ed2afd696261fccad4100948a42abe7adb3f49eda9417`.
+The versioned file stays tied to that release; later source edits do not update it.
+
 ## Modulus changes
 
 All 17 machine profiles use `MPG_ENABLE=2` and `KEYPAD_ENABLE=0`.
